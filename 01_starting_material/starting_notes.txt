@@ -1,0 +1,17 @@
+JS runtime => Node.js / Deno / Bun
+
+package.json => The package.json file is a crucial part of any Node.js project. It serves as a manifest file that contains important metadata about the project, such as its name, version, dependencies, and scripts.
+
+.env => The .env file is used to store sensitive configuration variables for a project, such as API keys or database credentials, and should not be committed to version control.
+
+-> src 
+    index(DB connects)
+    App(config, cookies, urlencode)
+    constants(enums, DB-name)
+-> DB
+-> Models
+-> Controllers
+-> Routes
+-> Middlewares
+-> Utils
+-> More (depends)
