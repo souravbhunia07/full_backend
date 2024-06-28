@@ -4,13 +4,17 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
+// Important:
+// accessToken: short lived token
+// refreshToken(storageToken): long lived token, saved in database
+
 const generateAccessAndRefreshTokens = async(userId) => {
     try {
         const user = await User.findById(userId);
         const accessToken = user.generateAccessToken();
         const refreshToken = user.generateRefreshToken();
 
-        user.refreshToken = refreshToken;
+        user.refreshTokens = refreshToken;
         await user.save({validateBeforeSave: false});
 
         return {accessToken, refreshToken};
@@ -102,7 +106,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const {email, username, password} = req.body;
 
-    if(!username || !email){
+    if(!username && !email){
         throw new ApiError(400, "Please provide username or email");
     }
 
@@ -159,6 +163,14 @@ const logoutUser = asyncHandler(async (req, res) => {
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
         .json(new ApiResponse(200, {}, "User logged out successfully"));
+});
+
+const refreshAccessToken = asyncHandler(async (req, res) => {
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
+
+    if(!incomingRefreshToken){
+        throw new ApiError(401, "Unauthorized request");
+    }
 });
 
 export { registerUser, loginUser, logoutUser };
